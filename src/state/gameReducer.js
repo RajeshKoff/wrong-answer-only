@@ -1,4 +1,5 @@
 import { SCREEN } from "../config.js";
+import { CORRECT_ANSWER_POINTS } from "../utils/scoring.js";
 
 export const initialState = {
   screen: SCREEN.SPLASH, profile: null, stats: { cleared: {}, attempts: {}, failedAttempts: {} }, seen: {},
@@ -19,14 +20,14 @@ export function gameReducer(state, action) {
     case "ANSWER": {
       if (state.screen !== SCREEN.PLAYING || !state.questions[state.questionIndex]) return state;
       const nextReactions = action.passed ? [...state.reactions, { reactionMs: action.reactionMs, timeLimit: action.timeLimit }] : state.reactions;
-      const nextScore = action.passed ? state.score + Math.max(10, Math.round((action.timeLimit - action.reactionMs / 1000) * 100)) : state.score;
+      const nextScore = action.passed ? state.score + CORRECT_ANSWER_POINTS : state.score;
       if (!action.passed) return {
         ...state, result: { won: false, pickedId: action.pickedId, wrongId: action.wrongId, question: state.questions[state.questionIndex], reactions: state.reactions, runTimeMs: performance.now() - state.startedAt, attemptNumber: action.attemptNumber }, screen: SCREEN.LEVEL_RESULT,
       };
       const nextIndex = state.questionIndex + 1;
       if (nextIndex >= state.questions.length) return {
         ...state, score: nextScore, streak: state.streak + 1, reactions: nextReactions,
-        result: { won: true, reactions: nextReactions, runTimeMs: performance.now() - state.startedAt }, screen: SCREEN.LEVEL_RESULT,
+        result: { won: true, reactions: nextReactions, runTimeMs: performance.now() - state.startedAt, attemptNumber: action.attemptNumber }, screen: SCREEN.LEVEL_RESULT,
       };
       return { ...state, score: nextScore, streak: state.streak + 1, reactions: nextReactions, questionIndex: nextIndex };
     }

@@ -10,7 +10,6 @@ export default function Splash({ onStart, onLeaderboard, highScore = 0 }) {
     <button className="arcade-button start-button" onClick={onStart}>TAP TO START <span>➜</span></button>
     <div className="sticker sticker-one" aria-hidden="true">100%<br />WRONG</div>
     <div className="sticker sticker-two" aria-hidden="true">WRONG<br />IS RIGHT!</div>
-    <div className="sticker sticker-three" aria-hidden="true">MASS<br />MODE</div>
 
   </div>;
 }

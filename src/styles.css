@@ -54,7 +54,7 @@
 .sticker-four{left:20px;bottom:15%;background:var(--yellow);color:#211500;transform:rotate(-7deg)}
 .map-scroll{display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;gap:8px;padding:14px 5px;width:100%}
 .map-scroll .level-path{display:none}
-.map-scroll>.level-node,.map-scroll>.level-node:nth-child(odd),.map-scroll>.level-node:nth-child(even),.map-scroll>.level-node:nth-of-type(odd),.map-scroll>.level-node:nth-of-type(even){width:min(100%,340px);height:76px;flex-direction:row;text-align:left;align-self:center;margin:0;transform:translateX(var(--node-shift,0));padding:0 12px;border:1px solid color-mix(in srgb,var(--level-color),transparent 72%);border-left:3px solid var(--level-color);border-radius:14px;background:linear-gradient(105deg,color-mix(in srgb,var(--level-color),#21172c 91%),#171020 68%);box-shadow:0 5px 0 #08050d,0 8px 18px #0003}
+.map-scroll>.level-node,.map-scroll>.level-node:nth-child(odd),.map-scroll>.level-node:nth-child(even),.map-scroll>.level-node:nth-of-type(odd),.map-scroll>.level-node:nth-of-type(even){width:min(92%,320px);height:76px;flex-direction:row;text-align:left;align-self:center;margin:0;transform:translateX(var(--node-shift,0));padding:0 12px;border:1px solid color-mix(in srgb,var(--level-color),transparent 72%);border-left:3px solid var(--level-color);border-radius:14px;background:linear-gradient(105deg,color-mix(in srgb,var(--level-color),#21172c 91%),#171020 68%);box-shadow:0 5px 0 #08050d,0 8px 18px #0003}
 .map-scroll>.level-node .node-orbit{left:7px;right:auto;top:8px;width:59px;height:59px}
 .map-scroll>.level-node .node-core{width:46px;height:46px}
 .map-scroll>.level-node .node-label{padding-left:5px}
@@ -225,3 +225,5 @@ button:focus-visible,input:focus-visible{outline-color:#AFFF00}
 .result-stage-badge b{color:#AFFF00;font-family:'Bangers',cursive;font-size:20px;line-height:1}
 @media(max-width:360px){.result-map-button{padding:0 10px;font-size:10px}.result-stage-badge{min-width:78px}}
 .map-title-row .trophy-button,.map-title-row .trophy-button svg,.best-time svg{color:#AFFF00}
+.logo-wrap .glitch-logo{position:relative;z-index:1}
+.logo-wrap .logo-only{position:relative;z-index:2}

@@ -3,7 +3,7 @@ import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import { LEVELS, validateBank } from "./data/questions.js";
 import { LEVELS_META, SCREEN } from "./config.js";
 import { drawQuestions } from "./utils/shuffle.js";
-import { averageReactionRatio, calculateRunScore } from "./utils/scoring.js";
+import { calculateRunScore, starsForAttempt } from "./utils/scoring.js";
 import { storage } from "./services/storage.js";
 import { getLeaderboard, updatePlayerLeaderboard } from "./services/leaderboard.js";
 import { gameReducer, initialState } from "./state/gameReducer.js";
@@ -25,8 +25,19 @@ export default function App() {
 
   useEffect(() => {
     if (!validateBank()) console.error("WAO question bank validation failed.");
-    storage.load().then((data) => dispatch({ type: "HYDRATE", data }));
-    getLeaderboard().then((rows) => dispatch({ type: "SET_LEADERBOARD", rows }));
+    storage.load().then(async (data) => {
+      const cleared = Object.fromEntries(Object.entries(data.stats?.cleared || {}).map(([levelId, record]) => {
+        const level = LEVELS_META.find((item) => item.id === Number(levelId));
+        return [levelId, level ? { ...record, score: calculateRunScore(level.questions) } : record];
+      }));
+      const stats = { ...data.stats, cleared };
+      const savedScoresChanged = Object.entries(cleared).some(([levelId, record]) => record.score !== data.stats?.cleared?.[levelId]?.score);
+      const hydratedData = { ...data, stats };
+      if (savedScoresChanged) await storage.saveStats(stats);
+      dispatch({ type: "HYDRATE", data: hydratedData });
+      const rows = data.profile ? await updatePlayerLeaderboard(data.profile, stats) : await getLeaderboard();
+      dispatch({ type: "SET_LEADERBOARD", rows });
+    });
   }, []);
 
   const playBeep = useCallback((frequency = 660, duration = 0.06) => {
@@ -85,7 +96,7 @@ export default function App() {
     dispatch({ type: "ANSWER", pickedId, wrongId: question.wrong, passed, reactionMs, attemptNumber: (state.stats.attempts?.[state.level] || 0) + 1, timeLimit: LEVELS_META.find((item) => item.id === state.level).secPerQ });
   }, [state.questions, state.questionIndex, state.level, state.streak, playBeep]);
 
-  const runScore = useMemo(() => state.result?.won ? calculateRunScore(state.level, state.result.reactions, state.stats.failedAttempts?.[state.level] || 0) : 0, [state.result, state.level, state.stats.failedAttempts]);
+  const runScore = useMemo(() => state.result?.won ? calculateRunScore(state.result.reactions.length) : 0, [state.result]);
   useEffect(() => {
     if (state.screen !== SCREEN.LEVEL_RESULT || !state.result || committedResult.current === state.result) return;
     committedResult.current = state.result;
@@ -101,7 +112,7 @@ export default function App() {
           level: state.level,
           score: runScore,
           timeMs: state.result.runTimeMs,
-          stars: averageReactionRatio(state.result.reactions) < 0.5 ? 3 : 2,
+          stars: starsForAttempt(state.result.attemptNumber),
           reactions: state.result.reactions,
         };
         cleared[state.level] = previous ? {

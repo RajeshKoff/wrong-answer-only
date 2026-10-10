@@ -2,19 +2,20 @@ import { motion } from "framer-motion";
 import { ArrowLeft, RotateCcw, Trophy } from "lucide-react";
 import Confetti from "./Confetti.jsx";
 import { LEVELS_META } from "../config.js";
+import { starsForAttempt } from "../utils/scoring.js";
 
 const taunts = ["Aiyo! Too quick with the tap, machi!", "Close call! Your finger got overconfident.", "Plot twist: the obvious one was right!", "Mass try. One tiny tap betrayal.", "The quiz said ‘wrong only’ and you went right!"];
 export default function ResultScreen({ result, levelId, profile, best, runScore, onRetry, onMap, onLeaderboard }) {
   const level = LEVELS_META.find((item) => item.id === levelId);
   const taunt = result.pickedId == null ? "Timer said bye before the tap!" : taunts[(Date.now() + levelId) % taunts.length];
-  const stars = result.won ? (result.reactions.reduce((sum, item) => sum + item.reactionMs / (item.timeLimit * 1000), 0) / Math.max(1, result.reactions.length) < 0.5 ? 3 : 2) : 0;
+  const stars = result.won ? starsForAttempt(result.attemptNumber) : 0;
   const failQuestion = result.question;
   return <motion.div className={`screen result-screen ${result.won ? "win" : "lose"}`} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
     {result.won && <Confetti />}
     <header className="result-topline"><button className="result-map-button" onClick={onMap}><ArrowLeft size={18} /><span>LEVEL MAP</span></button><div className="result-stage-badge"><small>STAGE</small><b>{String(levelId).padStart(2, "0")}</b></div></header>
     {result.won ? <>
       <span className="result-kicker">{level.title.toUpperCase()} • CLEARED</span><motion.div className="result-emblem" initial={{ scale: 0.4, rotate: -30 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 180 }}><Trophy size={50} /></motion.div>
-      <h2 className="result-title">MASS<br /><em>ANSWER!</em></h2><div className="star-row">{[1, 2, 3].map((star) => <span key={star} className={star <= stars ? "earned" : ""}>★</span>)}</div>
+      <h2 className="result-title">MASS<br /><em>ANSWER!</em></h2><div className="star-row">{[1, 2, 3, 4, 5].map((star) => <span key={star} className={star <= stars ? "earned" : ""}>★</span>)}</div>
       <p className="result-caption">Every round wrong. Every tap right.</p><div className="result-stats"><div><small>RUN SCORE</small><b>{runScore.toLocaleString()}</b></div><div><small>CLEAR TIME</small><b>{(result.runTimeMs / 1000).toFixed(1)}<i>s</i></b></div><div><small>BEST</small><b>{best ? `${(best.timeMs / 1000).toFixed(1)}s` : "NEW!"}</b></div></div>
       <button className="arcade-button full-button" onClick={onRetry}>PLAY AGAIN <RotateCcw size={18} /></button><button className="secondary-button full-button" onClick={onMap}>BACK TO LEVEL MAP</button>
     </> : <>
