@@ -14,16 +14,20 @@ export default function NameEntry({ onSubmit, onBack }) {
     onSubmit(clean);
   };
   return <div className="screen centered-screen">
-    <button className="back-button" onClick={onBack}><ArrowLeft size={18} /> BACK</button>
+    <button className="back-button" onClick={onBack} aria-label="Back"><ArrowLeft size={18} /></button>
+    <div className="sticker name-entry-sticker name-entry-sticker-extra name-entry-sticker-top-left" aria-hidden="true">ODD ONE<br />OUT</div>
     <div className="name-entry-content">
       <span className="eyebrow">PLAYER SETUP</span>
       <h2 className="screen-title">WHAT DO<br />WE CALL YOU?</h2>
-      <p className="muted-copy">Set your name here</p>
+
       <form className="name-form" onSubmit={submit}>
         <label htmlFor="gamer-name">YOUR GAMER TAG</label>
-        <input id="gamer-name" autoFocus autoComplete="nickname" maxLength={16} value={name} onChange={(event) => { setName(event.target.value); setError(""); }} placeholder="e.g. ThalaivaFan" />
+        <input id="gamer-name" autoFocus autoComplete="nickname" maxLength={16} value={name} onChange={(event) => { setName(event.target.value); setError(""); }} placeholder="e.g. Thalapathy" />
         <div className="input-foot"><span>{error || "3–12 characters • keep it friendly"}</span><span>{name.trim().length}/12</span></div>
-        <button className="arcade-button full-button" type="submit">LET'S PLAY <span>➜</span></button>
+        <div className="name-entry-button-wrap">
+          <div className="sticker name-entry-sticker name-entry-sticker-bottom" aria-hidden="true">TAG<br />UP!</div>
+          <button className="arcade-button full-button" type="submit">LET'S PLAY <span>➜</span></button>
+        </div>
       </form>
     </div>
   </div>;

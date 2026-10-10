@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from "framer-motion";
-const colors = ["#ffd400", "#ff4d6d", "#38e8ff", "#b987ff", "#fff4b0"];
+const colors = ["#AFFF00", "#9300FF", "#FFFFFF", "#808080"];
 export default function Confetti() {
   const reduce = useReducedMotion();
   if (reduce) return null;

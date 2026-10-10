@@ -11,7 +11,7 @@ export default function ResultScreen({ result, levelId, profile, best, runScore,
   const failQuestion = result.question;
   return <motion.div className={`screen result-screen ${result.won ? "win" : "lose"}`} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
     {result.won && <Confetti />}
-    <div className="result-topline"><button className="text-button" onClick={onMap}><ArrowLeft size={16} /> LEVEL MAP</button><span>STAGE {String(levelId).padStart(2, "0")}</span></div>
+    <header className="result-topline"><button className="result-map-button" onClick={onMap}><ArrowLeft size={18} /><span>LEVEL MAP</span></button><div className="result-stage-badge"><small>STAGE</small><b>{String(levelId).padStart(2, "0")}</b></div></header>
     {result.won ? <>
       <span className="result-kicker">{level.title.toUpperCase()} • CLEARED</span><motion.div className="result-emblem" initial={{ scale: 0.4, rotate: -30 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 180 }}><Trophy size={50} /></motion.div>
       <h2 className="result-title">MASS<br /><em>ANSWER!</em></h2><div className="star-row">{[1, 2, 3].map((star) => <span key={star} className={star <= stars ? "earned" : ""}>★</span>)}</div>

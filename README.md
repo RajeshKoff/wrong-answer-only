@@ -1,6 +1,6 @@
 # WRONG ANSWER ONLY (WAO!)
 
-A mobile-first Tamil pop-culture arcade quiz built with React, Vite, Tailwind CSS, and Framer Motion. Every round asks a normal question: tap the one odd/wrong option before the timer hits zero.
+A mobile-first Tamil pop-culture quiz built with React, Vite, Tailwind CSS, and Framer Motion. Every round asks a normal question: tap the one odd/wrong option before the timer hits zero.
 
 ## Run locally
 
@@ -29,5 +29,5 @@ The supplied question bank in `src/questions.js` is preserved unchanged and re-e
 - `src/services/` — local storage and leaderboard ranking
 - `src/utils/` — question shuffling and score calculations
 - `src/hooks/useQuestionTimer.js` — per-question high-resolution timer
-- `src/components/` — arcade screens and gameplay UI
+- `src/components/` — game screens and gameplay UI
 - `src/App.jsx` — app flow and persistence orchestration

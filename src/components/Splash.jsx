@@ -4,7 +4,7 @@ export default function Splash({ onStart, onLeaderboard, highScore = 0 }) {
     <div className="logo-wrap">
       <h1 className="glitch-logo" data-text="WRONG ANSWER"><span>WRONG</span><br />ANSWER</h1>
       <div className="logo-only">ONLY <i>✦</i></div>
-      <div className="logo-stamp">WAO!<br /><small>ARCADE</small></div>
+      <div className="logo-stamp">WAO!<br /><small>QUIZ</small></div>
     </div>
     <p className="splash-copy">Every option looks right.<br /><b>Your job? Pick the one that isn't.</b></p>
     <button className="arcade-button start-button" onClick={onStart}>TAP TO START <span>➜</span></button>

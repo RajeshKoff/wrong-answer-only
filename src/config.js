@@ -1,11 +1,11 @@
 import { LEVEL_CONFIG } from "./data/questions.js";
 
 export const LEVELS_META = [
-  { id: 1, title: "Warm-up Thala", color: "#ffd400", subtitle: "Find your wrong-side instinct" },
-  { id: 2, title: "Meme Machi", color: "#ff4d6d", subtitle: "Meme memory: ON" },
-  { id: 3, title: "Arasiyal Alaparai", color: "#38e8ff", subtitle: "Just the fun facts" },
-  { id: 4, title: "Mass Mode", color: "#b987ff", subtitle: "No time to second-guess" },
-  { id: 5, title: "Wrong Answer God", color: "#ff914d", subtitle: "The final boss" },
+  { id: 1, title: "Warm-up Thala", color: "#AFFF00", subtitle: "Find your wrong-side instinct" },
+  { id: 2, title: "Meme Machi", color: "#9300FF", subtitle: "Meme memory: ON" },
+  { id: 3, title: "Arasiyal Alaparai", color: "#AFFF00", subtitle: "Just the fun facts" },
+  { id: 4, title: "Mass Mode", color: "#9300FF", subtitle: "No time to second-guess" },
+  { id: 5, title: "Wrong Answer God", color: "#AFFF00", subtitle: "The final boss" },
 ].map((level) => ({ ...level, ...LEVEL_CONFIG[level.id] }));
 
 export const SCREEN = {
