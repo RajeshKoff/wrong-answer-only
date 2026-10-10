@@ -11,6 +11,6 @@ export default function Splash({ onStart, onLeaderboard, highScore = 0 }) {
     <div className="sticker sticker-one" aria-hidden="true">100%<br />WRONG</div>
     <div className="sticker sticker-two" aria-hidden="true">WRONG<br />IS RIGHT!</div>
     <div className="sticker sticker-three" aria-hidden="true">MASS<br />MODE</div>
-    <div className="sticker sticker-four" aria-hidden="true">TAP FAST<br />MACHI!</div>
+
   </div>;
 }
