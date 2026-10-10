@@ -33,14 +33,16 @@ export default function App() {
       const stats = { ...data.stats, cleared };
       const savedScoresChanged = Object.entries(cleared).some(([levelId, record]) => record.score !== data.stats?.cleared?.[levelId]?.score);
       const hydratedData = { ...data, stats };
-      if (data.profile || savedScoresChanged) await storage.saveStats(stats);
       dispatch({ type: "HYDRATE", data: hydratedData });
-      const rows = await getLeaderboard();
-      dispatch({ type: "SET_LEADERBOARD", rows });
+      if (data.profile || savedScoresChanged) {
+        storage.saveStats(stats).catch((error) => console.error("Could not sync saved scores to Firebase.", error));
+      }
+      getLeaderboard()
+        .then((rows) => dispatch({ type: "SET_LEADERBOARD", rows }))
+        .catch((error) => console.error("Could not load the shared leaderboard.", error));
     }).catch((error) => {
       console.error("Could not load WAO data from Firebase.", error);
       dispatch({ type: "HYDRATE", data: { profile: null, seen: {}, stats: { cleared: {}, attempts: {}, failedAttempts: {} } } });
-      getLeaderboard().then((rows) => dispatch({ type: "SET_LEADERBOARD", rows })).catch((leaderboardError) => console.error("Could not load the shared leaderboard.", leaderboardError));
     });
   }, []);
 

@@ -9,7 +9,8 @@ export default function Leaderboard({ players, profile, onBack }) {
     if (tab === "overall") return players;
     return players.filter((player) => player.levelTimes?.[level] != null).sort((a, b) => a.levelTimes[level] - b.levelTimes[level] || b.score - a.score);
   }, [players, tab, level]);
-  const yourIndex = rows.findIndex((player) => player.id === "you");
+  const isYou = (player) => player.uid === profile?.uid || player.id === profile?.uid;
+  const yourIndex = rows.findIndex(isYou);
   const top = rows.slice(0, 20);
   return <div className="screen leaderboard-screen">
     <header className="leaderboard-header">
@@ -26,9 +27,9 @@ export default function Leaderboard({ players, profile, onBack }) {
     {rows.length === 0 ? <div className="leader-empty"><div className="empty-medal"><Medal size={32} /></div><span className="eyebrow"> SCOREBOARD OPEN</span><h3>NO SCORES<br />ON THE BOARD</h3><p>Clear a level and claim the first spot.<br />Your name goes here, machi.</p></div> : <div className="leaderboard-list-wrap"><div className="leaderboard-list">{top.map((player, index) => {
       const playerStars = tab === "overall" ? player.stars || 0 : player.levelStars?.[level] || 0;
       const playerAttempts = tab === "overall" ? player.attempts || 0 : player.levelAttempts?.[level] || 1;
-      return <div key={player.id} className={`leader-row ${player.id === "you" ? "is-you" : ""}`}>
+      return <div key={player.id} className={`leader-row ${isYou(player) ? "is-you" : ""}`}>
         <span className="rank-number">{index === 0 ? <Crown size={15} fill="currentColor" /> : String(index + 1).padStart(2, "0")}</span>
-          <span className="leader-person"><span className="leader-name">{player.name}{player.id === "you" && <small>YOU</small>}</span></span>
+          <span className="leader-person"><span className="leader-name">{player.name}{isYou(player) && <small>YOU</small>}</span></span>
           <span className="leader-summary"><span className="leader-metrics"><span className="leader-stars" aria-label={`${playerStars} stars`}>{Array.from({ length: Math.min(playerStars, 5) }, (_, starIndex) => <Star key={starIndex} size={11} fill="currentColor" />)}</span><span className="leader-attempts" aria-label={`${playerAttempts} attempts`}><small>ATTEMPTS</small><b>{playerAttempts}</b></span></span><span className={`leader-result ${tab === "level" ? "is-time" : ""}`}>{tab === "overall" ? <><b>{player.score.toLocaleString()}</b><small>POINTS</small></> : <><b>{player.levelTimes[level].toFixed(2)}</b><small>SECONDS</small></>}</span></span>
       </div>;
     })}</div></div>}

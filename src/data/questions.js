@@ -282,10 +282,10 @@ export const LEVELS = {
 
 export const LEVEL_CONFIG = {
   1: { questions: 5,  options: 2, secPerQ: 2.0, pool: 15 },
-  2: { questions: 10, options: 3, secPerQ: 2.0, pool: 30 },
-  3: { questions: 15, options: 3, secPerQ: 2.0, pool: 45 },
-  4: { questions: 20, options: 3, secPerQ: 1.5, pool: 60 },
-  5: { questions: 25, options: 4, secPerQ: 1.5, pool: 75 },
+  2: { questions: 10, options: 3, secPerQ: 2.5, pool: 30 },
+  3: { questions: 15, options: 3, secPerQ: 2.5, pool: 45 },
+  4: { questions: 20, options: 3, secPerQ: 3.0, pool: 60 },
+  5: { questions: 25, options: 4, secPerQ: 3.0, pool: 75 },
 };
 
 // Call once at startup. Logs errors if the bank is malformed.

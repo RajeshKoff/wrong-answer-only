@@ -1,5 +1,5 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
-import { getAuth, signInAnonymously } from "firebase/auth";
+import { browserLocalPersistence, getAuth, setPersistence, signInAnonymously } from "firebase/auth";
 import {
   addDoc,
   collection,
@@ -25,6 +25,7 @@ const firebaseConfig = {
 const configured = Object.values(firebaseConfig).every(Boolean);
 let database;
 let auth;
+let authInitialization;
 let signInPromise = null;
 
 function getFirebaseApp() {
@@ -38,6 +39,14 @@ export async function getFirebaseContext() {
   const app = getFirebaseApp();
   database ||= getFirestore(app);
   auth ||= getAuth(app);
+  authInitialization ||= (async () => {
+    await auth.authStateReady();
+    await setPersistence(auth, browserLocalPersistence);
+  })().catch((error) => {
+    authInitialization = null;
+    throw error;
+  });
+  await authInitialization;
   if (!auth.currentUser) {
     signInPromise ||= signInAnonymously(auth).finally(() => { signInPromise = null; });
     await signInPromise;
