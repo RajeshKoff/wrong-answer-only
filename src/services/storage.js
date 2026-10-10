@@ -1,6 +1,6 @@
 import { STORAGE_KEYS } from "../config.js";
 
-const read = (key, fallback) => {
+const readLegacy = (key, fallback) => {
   try {
     const value = localStorage.getItem(key);
     return value ? JSON.parse(value) : fallback;
@@ -8,26 +8,33 @@ const read = (key, fallback) => {
     return fallback;
   }
 };
-const write = (key, value) => {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch (error) {
-    console.warn("WAO could not save local data", error);
-  }
-};
-
-// Async boundary keeps storage swappable for Firebase/Supabase later.
 export const storage = {
   async load() {
-    return {
-      profile: read(STORAGE_KEYS.profile, null),
-      seen: read(STORAGE_KEYS.seen, {}),
-      stats: read(STORAGE_KEYS.stats, { cleared: {}, attempts: {} }),
-    };
+    const { loadPlayerData } = await import("./firebase.js");
+    return loadPlayerData({
+      profile: readLegacy(STORAGE_KEYS.profile, null),
+      seen: readLegacy(STORAGE_KEYS.seen, {}),
+      stats: readLegacy(STORAGE_KEYS.stats, { cleared: {}, attempts: {}, failedAttempts: {} }),
+    });
   },
-  async saveProfile(profile) { write(STORAGE_KEYS.profile, profile); },
-  async saveSeen(seen) { write(STORAGE_KEYS.seen, seen); },
-  async saveStats(stats) { write(STORAGE_KEYS.stats, stats); },
-  async getLeaderboard() { return read(STORAGE_KEYS.leaderboard, null); },
-  async saveLeaderboard(rows) { write(STORAGE_KEYS.leaderboard, rows); },
+  async saveProfile(profile) {
+    const { claimUsername } = await import("./firebase.js");
+    return claimUsername(profile.name);
+  },
+  async saveSeen(seen) {
+    const { savePlayerSeen } = await import("./firebase.js");
+    return savePlayerSeen(seen);
+  },
+  async saveStats(stats) {
+    const { savePlayerStats } = await import("./firebase.js");
+    return savePlayerStats(stats);
+  },
+  async saveRun(level, result, score) {
+    const { savePlayerRun } = await import("./firebase.js");
+    return savePlayerRun(level, result, score);
+  },
+  async getLeaderboard() {
+    const { fetchLeaderboard } = await import("./firebase.js");
+    return fetchLeaderboard();
+  },
 };

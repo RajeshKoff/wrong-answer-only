@@ -5,7 +5,7 @@ import { LEVELS_META, SCREEN } from "./config.js";
 import { drawQuestions } from "./utils/shuffle.js";
 import { calculateRunScore, starsForAttempt } from "./utils/scoring.js";
 import { storage } from "./services/storage.js";
-import { getLeaderboard, updatePlayerLeaderboard } from "./services/leaderboard.js";
+import { getLeaderboard } from "./services/leaderboard.js";
 import { gameReducer, initialState } from "./state/gameReducer.js";
 import Splash from "./components/Splash.jsx";
 import NameEntry from "./components/NameEntry.jsx";
@@ -33,10 +33,14 @@ export default function App() {
       const stats = { ...data.stats, cleared };
       const savedScoresChanged = Object.entries(cleared).some(([levelId, record]) => record.score !== data.stats?.cleared?.[levelId]?.score);
       const hydratedData = { ...data, stats };
-      if (savedScoresChanged) await storage.saveStats(stats);
+      if (data.profile || savedScoresChanged) await storage.saveStats(stats);
       dispatch({ type: "HYDRATE", data: hydratedData });
-      const rows = data.profile ? await updatePlayerLeaderboard(data.profile, stats) : await getLeaderboard();
+      const rows = await getLeaderboard();
       dispatch({ type: "SET_LEADERBOARD", rows });
+    }).catch((error) => {
+      console.error("Could not load WAO data from Firebase.", error);
+      dispatch({ type: "HYDRATE", data: { profile: null, seen: {}, stats: { cleared: {}, attempts: {}, failedAttempts: {} } } });
+      getLeaderboard().then((rows) => dispatch({ type: "SET_LEADERBOARD", rows })).catch((leaderboardError) => console.error("Could not load the shared leaderboard.", leaderboardError));
     });
   }, []);
 
@@ -62,15 +66,20 @@ export default function App() {
   const openLeaderboard = useCallback(() => {
     setLeaderboardReturn(state.screen);
     dispatch({ type: "SET_SCREEN", screen: SCREEN.LEADERBOARD });
-    getLeaderboard().then((rows) => dispatch({ type: "SET_LEADERBOARD", rows }));
+    getLeaderboard().then((rows) => dispatch({ type: "SET_LEADERBOARD", rows })).catch((error) => console.error("Could not refresh the shared leaderboard.", error));
   }, [state.screen]);
 
-  const startLevel = useCallback((levelId) => {
+  const startLevel = useCallback(async (levelId) => {
     const cfg = LEVELS_META.find((item) => item.id === levelId);
     const drawn = drawQuestions(LEVELS[levelId], cfg.questions, state.seen[levelId] || []);
     const seen = { ...state.seen, [levelId]: drawn.seenIds };
+    try {
+      await storage.saveSeen(seen);
+    } catch (error) {
+      console.error("Could not save game progress to Firebase.", error);
+      return;
+    }
     dispatch({ type: "SET_SEEN", seen });
-    storage.saveSeen(seen);
     dispatch({ type: "PREPARE_LEVEL", level: levelId, questions: drawn.questions });
     playBeep(440, 0.08);
   }, [state.seen, playBeep]);
@@ -129,12 +138,13 @@ export default function App() {
       }
       const stats = { cleared, attempts, failedAttempts };
       await storage.saveStats(stats);
+      await storage.saveRun(state.level, state.result, runScore);
       dispatch({ type: "SET_STATS", stats });
       if (state.profile) {
-        const rows = await updatePlayerLeaderboard(state.profile, stats);
+        const rows = await getLeaderboard();
         dispatch({ type: "SET_LEADERBOARD", rows });
       }
-    })();
+    })().catch((error) => console.error("Could not save this game to Firebase.", error));
   }, [state.screen, state.result, state.stats, state.level, state.profile, runScore]);
 
   const resultWithAttempts = state.result;
@@ -147,7 +157,7 @@ export default function App() {
       <div className="ambient-orb orb-a" /><div className="ambient-orb orb-b" />
       <AnimatePresence mode="wait" initial={false}>
         {state.screen === SCREEN.SPLASH && <motion.div key="splash" className="screen-holder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16, ease: "easeOut" }}><Splash highScore={highScore} onLeaderboard={openLeaderboard} onStart={() => state.profile ? dispatch({ type: "SET_SCREEN", screen: SCREEN.LEVEL_MAP }) : dispatch({ type: "SET_SCREEN", screen: SCREEN.NAME_ENTRY })} /></motion.div>}
-        {state.screen === SCREEN.NAME_ENTRY && <motion.div key="name" className="screen-holder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16, ease: "easeOut" }}><NameEntry onBack={() => dispatch({ type: "SET_SCREEN", screen: SCREEN.SPLASH })} onSubmit={async (name) => { const profile = { name }; await storage.saveProfile(profile); dispatch({ type: "SET_PROFILE", profile }); }} /></motion.div>}
+        {state.screen === SCREEN.NAME_ENTRY && <motion.div key="name" className="screen-holder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16, ease: "easeOut" }}><NameEntry onBack={() => dispatch({ type: "SET_SCREEN", screen: SCREEN.SPLASH })} onSubmit={async (name) => { const profile = await storage.saveProfile({ name }); dispatch({ type: "SET_PROFILE", profile }); }} /></motion.div>}
         {state.screen === SCREEN.LEVEL_MAP && <motion.div key="map" className="screen-holder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16, ease: "easeOut" }}><LevelMap profile={state.profile} stats={state.stats} onPlay={startLevel} onLeaderboard={openLeaderboard} onBack={() => dispatch({ type: "SET_SCREEN", screen: SCREEN.SPLASH })} /></motion.div>}
         {state.screen === SCREEN.COUNTDOWN && <motion.div key="countdown" className="screen-holder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16, ease: "easeOut" }}><div className="play-screen countdown-screen"><Countdown onDone={countdownDone} /></div></motion.div>}
         {state.screen === SCREEN.PLAYING && currentQuestion && <motion.div key="playing" className="screen-holder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16, ease: "easeOut" }}><div className="play-screen"><Hud level={level} score={state.score} /><QuestionCard key={currentQuestion.id} question={currentQuestion} level={level} index={state.questionIndex} total={state.questions.length} score={state.score} streak={state.streak} muted={state.muted} onToggleMute={toggleMute} onAnswer={answer} playTick={() => { const now = performance.now(); if (now - tickRef.current.last > 280) { tickRef.current.last = now; playBeep(430, 0.035); } }} /></div></motion.div>}

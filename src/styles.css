@@ -239,7 +239,7 @@ button:focus-visible,input:focus-visible{outline-color:#AFFF00}
 button:focus-visible,input:focus-visible{outline-color:#CDFF00}
 .glitch-logo span,.logo-only i,.logo-stamp,.sticker-one,.sticker-three{color:#CDFF00}
 .logo-stamp{border-color:#CDFF00;box-shadow:0 0 18px rgba(205,255,0,.24)}
-.sticker-one,.sticker-four,.name-form label,.centered-screen .name-entry-sticker-bottom,.centered-screen .name-entry-sticker-extra-lime,.centered-screen .name-entry-sticker-top-left{background:#CDFF00;color:#000000}
+.sticker-one,.sticker-four,.centered-screen .name-entry-sticker-bottom,.centered-screen .name-entry-sticker-extra-lime,.centered-screen .name-entry-sticker-top-left{background:#CDFF00;color:#000000}
 .name-form label,.map-title-row h2 em,.leaderboard-header h2 em,.streak-badge,.question-topline span:first-child,.question-timer>span,.countdown-number,.result-title em,.star-row .earned,.leader-row:first-child .rank-number,.avatar,.node-stamp,.leader-name small,.hud-level b,.hud-score b,.hud-life,.question-label,.fail-review>strong,.floating-points,.your-rank-place>span svg,.your-rank-place>b,.your-rank-player>small,.leaderboard-total,.leaderboard-title .eyebrow,.leaderboard-title h2 em,.leader-tabs button.active,.leader-result b,.empty-medal,.leader-empty .eyebrow,.result-map-button svg,.result-stage-badge b,.best-time svg,.map-title-row .trophy-button,.map-title-row .trophy-button svg,.result-screen .star-row svg.earned,.map-scroll>.level-node .node-attempts>b{color:#CDFF00}
 .glitch-logo:after{color:#CDFF00}
 .option-button:hover:not(:disabled){border-color:#CDFF00}
@@ -379,6 +379,12 @@ button:focus-visible,input:focus-visible{outline-color:#CDFF00}
 .leaderboard-screen .your-rank-player>small{font-size:8px;letter-spacing:.1em}
 .leaderboard-screen .your-rank-place>span,.leaderboard-screen .your-rank-place>b i,.leaderboard-screen .your-rank-player>span{color:#FFFFFF}
 @media(max-width:360px){.leaderboard-screen .leader-tabs button{font-size:9px}.leaderboard-screen .your-rank-place>span,.leaderboard-screen .your-rank-player>span{font-size:8px}.leaderboard-screen .your-rank-player>strong{font-size:15px}.leaderboard-screen .your-rank-player>small{font-size:7px}}
+.arcade-button{position:relative;border:1px solid rgba(255,255,255,.9);border-bottom:2px solid #A6CF00;background:linear-gradient(180deg,#D8FF42 0%,#CDFF00 58%,#C5F000 100%);box-shadow:0 3px 0 #9ABD00,0 7px 13px rgba(147,0,255,.12);transform:translateY(0);transition:transform .14s ease,box-shadow .14s ease,filter .14s ease}
+.arcade-button:hover{filter:brightness(1.04);transform:translateY(-1px);box-shadow:0 4px 0 #9ABD00,0 9px 15px rgba(147,0,255,.16)}
+.arcade-button:active{filter:brightness(.97);transform:translateY(2px);box-shadow:0 1px 0 #9ABD00,0 3px 7px rgba(147,0,255,.1)}
+.secondary-button{position:relative;border:1px solid #4a3b57;border-bottom:2px solid #5a168e;background:linear-gradient(180deg,#1b1720 0%,#0d0c10 100%);box-shadow:0 3px 0 #4d127b,0 7px 13px rgba(0,0,0,.32);transform:translateY(0);transition:transform .14s ease,box-shadow .14s ease,border-color .14s ease}
+.secondary-button:hover{border-color:#9300FF;transform:translateY(-1px);box-shadow:0 4px 0 #4d127b,0 9px 16px rgba(0,0,0,.36)}
+.secondary-button:active{transform:translateY(2px);box-shadow:0 1px 0 #4d127b,0 3px 7px rgba(0,0,0,.32)}
 @media(max-width:360px){.leaderboard-screen .leader-row{min-height:59px;padding:6px}.leaderboard-screen .leader-summary{gap:5px}.leaderboard-screen .leader-result{font-size:10px}.leaderboard-screen .leader-result b{font-size:11px}.leaderboard-screen .leader-metrics{gap:3px}.leaderboard-screen .leader-metrics>span{min-width:24px;height:22px;padding:0 3px}}
 .leaderboard-screen .leader-summary{display:flex;flex-direction:row;align-items:center;gap:6px}
 .leaderboard-screen .leader-result{min-height:22px;padding:2px 5px;border:1px solid #333333;border-radius:6px;background:#111111}

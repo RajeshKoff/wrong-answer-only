@@ -5,13 +5,28 @@ const blocked = /\b(fuck|shit|bitch|bastard|asshole|piss)\b/i;
 export default function NameEntry({ onSubmit, onBack }) {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
-  const submit = (event) => {
+  const [submitting, setSubmitting] = useState(false);
+  const submit = async (event) => {
     event.preventDefault();
-    const clean = name.trim().replace(/\s+/g, " ");
+    const clean = name.trim().replace(/\s+/g, " ").toLowerCase();
     if (clean.length < 3 || clean.length > 12) return setError("Keep it 3–12 characters, machi.");
     if (!/^[\p{L}\p{N}_ ]+$/u.test(clean)) return setError("Letters, numbers, spaces or _ only.");
     if (blocked.test(clean)) return setError("Choose a friendly gamer tag!");
-    onSubmit(clean);
+    setSubmitting(true);
+    setError("");
+    try {
+      await onSubmit(clean);
+    } catch (submitError) {
+      if (submitError?.code === "username-already-exists") {
+        setError("User already exists, try a new one.");
+      } else if (submitError?.code === "permission-denied") {
+        setError("Firebase blocked this save. Publish firestore.rules and enable Anonymous sign-in.");
+      } else {
+        setError("Could not save your name. Check your connection and try again.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
   return <div className="screen centered-screen">
     <button className="back-button" onClick={onBack} aria-label="Back"><ArrowLeft size={18} /></button>
@@ -26,7 +41,7 @@ export default function NameEntry({ onSubmit, onBack }) {
         <div className="input-foot"><span>{error || "3–12 characters • keep it friendly"}</span><span>{name.trim().length}/12</span></div>
         <div className="name-entry-button-wrap">
           <div className="sticker name-entry-sticker name-entry-sticker-bottom" aria-hidden="true">TAG<br />UP!</div>
-          <button className="arcade-button full-button" type="submit">LET'S PLAY <span>➜</span></button>
+          <button className="arcade-button full-button" type="submit" disabled={submitting}>{submitting ? "CHECKING NAME…" : <>LET'S PLAY <span>➜</span></>}</button>
         </div>
       </form>
     </div>
