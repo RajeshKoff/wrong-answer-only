@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, Crown, Trophy, Medal, Sparkles } from "lucide-react";
+import { ArrowLeft, Crown, Trophy, Medal, Sparkles, Star } from "lucide-react";
 import Podium from "./Podium.jsx";
 
 export default function Leaderboard({ players, profile, onBack }) {
@@ -23,7 +23,15 @@ export default function Leaderboard({ players, profile, onBack }) {
     </div>
     {tab === "level" && <div className="level-picker" aria-label="Choose a level">{[1, 2, 3, 4, 5].map((number) => <button key={number} className={level === number ? "active" : ""} onClick={() => setLevel(number)}>L{number}</button>)}</div>}
     {tab === "overall" && rows.length >= 3 && <section className="podium-panel"><div className="leaderboard-section-title"><span>TOP PLAYERS</span><small>THE CURRENT LEADERS</small></div><Podium players={rows.slice(0, 3)} /></section>}
-    {rows.length === 0 ? <div className="leader-empty"><div className="empty-medal"><Medal size={32} /></div><span className="eyebrow"> SCOREBOARD OPEN</span><h3>NO SCORES<br />ON THE BOARD</h3><p>Clear a level and claim the first spot.<br />Your name goes here, machi.</p></div> : <div className="leaderboard-list-wrap"><div className="leader-list-heading"><span>RANK <i> / </i> PLAYER</span><span>{tab === "overall" ? "LEVEL · SCORE" : "BEST TIME"}</span></div><div className="leaderboard-list">{top.map((player, index) => <div key={player.id} className={`leader-row ${player.id === "you" ? "is-you" : ""}`}><span className="rank-number">{index === 0 ? <Crown size={15} fill="currentColor" /> : String(index + 1).padStart(2, "0")}</span><span className="leader-name">{player.name}{player.id === "you" && <small>YOU</small>}</span><span className="leader-result">{tab === "overall" ? <><b>L{player.level}</b><i>·</i>{player.score.toLocaleString()}</> : `${player.levelTimes[level].toFixed(2)}s`}</span></div>)}</div></div>}
+    {rows.length === 0 ? <div className="leader-empty"><div className="empty-medal"><Medal size={32} /></div><span className="eyebrow"> SCOREBOARD OPEN</span><h3>NO SCORES<br />ON THE BOARD</h3><p>Clear a level and claim the first spot.<br />Your name goes here, machi.</p></div> : <div className="leaderboard-list-wrap"><div className="leaderboard-list">{top.map((player, index) => {
+      const playerStars = tab === "overall" ? player.stars || 0 : player.levelStars?.[level] || 0;
+      const playerAttempts = tab === "overall" ? player.attempts || 0 : player.levelAttempts?.[level] || 1;
+      return <div key={player.id} className={`leader-row ${player.id === "you" ? "is-you" : ""}`}>
+        <span className="rank-number">{index === 0 ? <Crown size={15} fill="currentColor" /> : String(index + 1).padStart(2, "0")}</span>
+          <span className="leader-person"><span className="leader-name">{player.name}{player.id === "you" && <small>YOU</small>}</span></span>
+          <span className="leader-summary"><span className="leader-metrics"><span className="leader-stars" aria-label={`${playerStars} stars`}>{Array.from({ length: Math.min(playerStars, 5) }, (_, starIndex) => <Star key={starIndex} size={11} fill="currentColor" />)}</span><span className="leader-attempts" aria-label={`${playerAttempts} attempts`}><small>ATTEMPTS</small><b>{playerAttempts}</b></span></span><span className={`leader-result ${tab === "level" ? "is-time" : ""}`}>{tab === "overall" ? <><b>{player.score.toLocaleString()}</b><small>POINTS</small></> : <><b>{player.levelTimes[level].toFixed(2)}</b><small>SECONDS</small></>}</span></span>
+      </div>;
+    })}</div></div>}
     <footer className="your-rank-bar">
       <div className="your-rank-place"><span><Trophy size={14} /> YOUR RANK</span><b>{yourIndex >= 0 ? `#${yourIndex + 1}` : "—"}<i> / {rows.length}</i></b></div>
       <div className="your-rank-player"><span>PLAYER</span><strong>{profile?.name || "PLAYER"}</strong><small>{yourIndex < 0 ? "CLEAR A LEVEL TO RANK" : "KEEP CLIMBING!"}</small></div>

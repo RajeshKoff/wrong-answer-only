@@ -51,7 +51,6 @@ export default function QuestionCard({ question, level, index, total, score, str
     <div className={`options-list options-${question.options.length}`}>
       {question.options.map((option, optionIndex) => <motion.button key={option.id} className={`option-button ${selectedId === option.id && feedback ? `picked-${feedback}` : ""}`} disabled={locked} onClick={() => choose(option.id)} whileTap={!locked ? { scale: 0.975 } : undefined} initial={{ x: optionIndex % 2 ? 16 : -16, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: optionIndex * 0.045 }}><span className="option-key">{optionIndex + 1}</span><span>{option.t}</span><span className="option-arrow">↗</span></motion.button>)}
     </div>
-    <div className="game-bottom-hint"><span>⚡ TRUST YOUR FIRST INSTINCT</span><span>1–{question.options.length} TO PICK</span></div>
     <div className="visually-hidden" aria-live="polite">{score} points. {streak} streak.</div>
     {feedback === "pass" && <motion.div className="floating-points" initial={{ opacity: 0, y: 15, scale: 0.65 }} animate={{ opacity: [0, 1, 0], y: -42, scale: [0.65, 1.15, 1] }} transition={{ duration: 0.75 }}>+{earnedPoints}</motion.div>}
     <AnimatePresence>{locked && <motion.div className="answer-lock" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />}</AnimatePresence>

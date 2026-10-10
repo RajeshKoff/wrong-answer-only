@@ -1,4 +1,9 @@
-import { Heart, Volume2, VolumeX } from "lucide-react";
-export default function Hud({ level, current, total, score, streak, muted, onToggleMute }) {
-  return <div className="game-hud"><div className="hud-level"><small>STAGE</small><b>{String(level).padStart(2, "0")}</b></div><div className="hud-progress"><small>ROUND</small><b>{String(current).padStart(2, "0")}<i> / {String(total).padStart(2, "0")}</i></b></div><div className="hud-score"><small>SCORE</small><b>{score.toLocaleString()}</b></div><div className="hud-life"><Heart size={20} fill="currentColor" /><b>×1</b></div><button className="hud-sound" onClick={onToggleMute} aria-label="Toggle sound">{muted ? <VolumeX size={18} /> : <Volume2 size={18} />}</button>{streak > 1 && <span className="streak-badge">🔥 {streak} STREAK</span>}</div>;
+export default function Hud({ level, score }) {
+  return <header className="game-hud">
+    <div className="hud-stage">
+      <span className="hud-stage-number">{String(level.id).padStart(2, "0")}</span>
+      <span className="hud-stage-copy"><small>NOW PLAYING</small><b>{level.title}</b></span>
+    </div>
+    <div className="hud-score"><small>SCORE</small><b>{score.toLocaleString()}</b></div>
+  </header>;
 }

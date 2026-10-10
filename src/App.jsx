@@ -104,24 +104,28 @@ export default function App() {
       const attempts = { ...(state.stats.attempts || {}) };
       const failedAttempts = { ...(state.stats.failedAttempts || {}) };
       let cleared = { ...(state.stats.cleared || {}) };
-      attempts[state.level] = (attempts[state.level] || 0) + 1;
-      if (!state.result.won) failedAttempts[state.level] = (failedAttempts[state.level] || 0) + 1;
+      const previous = cleared[state.level];
+      if (!previous) attempts[state.level] = Math.max(attempts[state.level] || 0, state.result.attemptNumber || (attempts[state.level] || 0) + 1);
+      if (!state.result.won && !previous) failedAttempts[state.level] = (failedAttempts[state.level] || 0) + 1;
       else {
-        const previous = cleared[state.level];
-        const next = {
-          level: state.level,
-          score: runScore,
-          timeMs: state.result.runTimeMs,
-          stars: starsForAttempt(state.result.attemptNumber),
-          reactions: state.result.reactions,
-        };
-        cleared[state.level] = previous ? {
-          ...next,
-          score: Math.max(previous.score, next.score),
-          timeMs: Math.min(previous.timeMs, next.timeMs),
-          stars: Math.max(previous.stars, next.stars),
-          reactions: previous.score > next.score ? previous.reactions : next.reactions,
-        } : next;
+        if (state.result.won) {
+          const next = {
+            level: state.level,
+            score: runScore,
+            timeMs: state.result.runTimeMs,
+            stars: starsForAttempt(state.result.attemptNumber),
+            attemptsTaken: previous?.attemptsTaken ?? attempts[state.level],
+            reactions: state.result.reactions,
+          };
+          cleared[state.level] = previous ? {
+            ...next,
+            score: Math.max(previous.score, next.score),
+            timeMs: Math.min(previous.timeMs, next.timeMs),
+            stars: Math.max(previous.stars, next.stars),
+            attemptsTaken: previous.attemptsTaken ?? next.attemptsTaken,
+            reactions: previous.score > next.score ? previous.reactions : next.reactions,
+          } : next;
+        }
       }
       const stats = { cleared, attempts, failedAttempts };
       await storage.saveStats(stats);
@@ -145,8 +149,8 @@ export default function App() {
         {state.screen === SCREEN.SPLASH && <motion.div key="splash" className="screen-holder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16, ease: "easeOut" }}><Splash highScore={highScore} onLeaderboard={openLeaderboard} onStart={() => state.profile ? dispatch({ type: "SET_SCREEN", screen: SCREEN.LEVEL_MAP }) : dispatch({ type: "SET_SCREEN", screen: SCREEN.NAME_ENTRY })} /></motion.div>}
         {state.screen === SCREEN.NAME_ENTRY && <motion.div key="name" className="screen-holder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16, ease: "easeOut" }}><NameEntry onBack={() => dispatch({ type: "SET_SCREEN", screen: SCREEN.SPLASH })} onSubmit={async (name) => { const profile = { name }; await storage.saveProfile(profile); dispatch({ type: "SET_PROFILE", profile }); }} /></motion.div>}
         {state.screen === SCREEN.LEVEL_MAP && <motion.div key="map" className="screen-holder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16, ease: "easeOut" }}><LevelMap profile={state.profile} stats={state.stats} onPlay={startLevel} onLeaderboard={openLeaderboard} onBack={() => dispatch({ type: "SET_SCREEN", screen: SCREEN.SPLASH })} /></motion.div>}
-        {state.screen === SCREEN.COUNTDOWN && <motion.div key="countdown" className="screen-holder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16, ease: "easeOut" }}><div className="play-screen"><Hud level={state.level} current={1} total={level.questions} score={0} streak={0} muted={state.muted} onToggleMute={toggleMute} /><Countdown onDone={countdownDone} /></div></motion.div>}
-        {state.screen === SCREEN.PLAYING && currentQuestion && <motion.div key="playing" className="screen-holder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16, ease: "easeOut" }}><div className="play-screen"><Hud level={state.level} current={state.questionIndex + 1} total={state.questions.length} score={state.score} streak={state.streak} muted={state.muted} onToggleMute={toggleMute} /><QuestionCard key={currentQuestion.id} question={currentQuestion} level={level} index={state.questionIndex} total={state.questions.length} score={state.score} streak={state.streak} muted={state.muted} onToggleMute={toggleMute} onAnswer={answer} playTick={() => { const now = performance.now(); if (now - tickRef.current.last > 280) { tickRef.current.last = now; playBeep(430, 0.035); } }} /></div></motion.div>}
+        {state.screen === SCREEN.COUNTDOWN && <motion.div key="countdown" className="screen-holder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16, ease: "easeOut" }}><div className="play-screen countdown-screen"><Countdown onDone={countdownDone} /></div></motion.div>}
+        {state.screen === SCREEN.PLAYING && currentQuestion && <motion.div key="playing" className="screen-holder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16, ease: "easeOut" }}><div className="play-screen"><Hud level={level} score={state.score} /><QuestionCard key={currentQuestion.id} question={currentQuestion} level={level} index={state.questionIndex} total={state.questions.length} score={state.score} streak={state.streak} muted={state.muted} onToggleMute={toggleMute} onAnswer={answer} playTick={() => { const now = performance.now(); if (now - tickRef.current.last > 280) { tickRef.current.last = now; playBeep(430, 0.035); } }} /></div></motion.div>}
         {state.screen === SCREEN.LEVEL_RESULT && resultWithAttempts && <motion.div key="result" className="screen-holder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16, ease: "easeOut" }}><ResultScreen result={resultWithAttempts} levelId={state.level} profile={state.profile} best={state.stats.cleared?.[state.level]} runScore={runScore} onRetry={() => startLevel(state.level)} onMap={() => dispatch({ type: "RETRY_LEVEL" })} onLeaderboard={openLeaderboard} /></motion.div>}
         {state.screen === SCREEN.LEADERBOARD && <motion.div key="leaderboard" className="screen-holder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16, ease: "easeOut" }}><Leaderboard players={state.leaderboard} profile={state.profile} onBack={() => dispatch({ type: "SET_SCREEN", screen: leaderboardReturn })} /></motion.div>}
       </AnimatePresence>

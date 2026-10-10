@@ -7,10 +7,10 @@ export default function Countdown({ onDone }) {
   useEffect(() => { onDoneRef.current = onDone; }, [onDone]);
   useEffect(() => {
     const timers = [
-      setTimeout(() => setCount(2), 1000),
-      setTimeout(() => setCount(1), 2000),
-      setTimeout(() => setCount(0), 3000),
-      setTimeout(() => onDoneRef.current(), 3800),
+      setTimeout(() => setCount(2), 800),
+      setTimeout(() => setCount(1), 1600),
+      setTimeout(() => setCount(0), 2400),
+      setTimeout(() => onDoneRef.current(), 3100),
     ];
     return () => timers.forEach(clearTimeout);
   }, []);

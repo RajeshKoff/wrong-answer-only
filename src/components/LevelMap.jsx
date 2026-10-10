@@ -10,10 +10,12 @@ export default function LevelMap({ profile, stats, onPlay, onLeaderboard, onBack
       {LEVELS_META.map((level, index) => {
         const cleared = stats.cleared?.[level.id];
         const unlocked = level.id <= highest + 1;
+        const attemptsTaken = cleared ? (cleared.attemptsTaken ?? 1) : (unlocked ? (stats.attempts?.[level.id] || 0) : null);
         const shift = index % 2 === 0 ? "-12px" : "12px";
         return <button key={level.id} className={`level-node ${!unlocked ? "locked" : ""} ${cleared ? "cleared" : ""}`} style={{ "--level-color": level.color, "--node-shift": shift }} onClick={() => unlocked && onPlay(level.id)} disabled={!unlocked}>
           <span className="node-core">{!unlocked ? <LockKeyhole /> : <b>{String(level.id).padStart(2, "0")}</b>}</span>
           <span className="node-label"><b>{level.title}</b>{cleared ? <span className="cleared-meta"><span className="level-stars" aria-label={`${cleared.stars} out of 5 stars`}>{[1, 2, 3, 4, 5].map((star) => <Star key={star} size={12} fill={star <= cleared.stars ? "currentColor" : "none"} />)}</span><span className="best-time"><Clock3 size={11} /> {(cleared.timeMs / 1000).toFixed(1)}s <i>BEST</i></span></span> : <small>{unlocked ? `${level.questions} QUESTIONS • ${level.secPerQ}s EACH` : "LOCKED • CLEAR PREVIOUS"}</small>}</span>
+          <span className={`node-attempts ${cleared ? "is-cleared" : ""}`} aria-label={attemptsTaken == null ? "Locked" : `${attemptsTaken} attempts taken`}><b>{attemptsTaken ?? "—"}</b><small>ATTEMPTS</small></span>
           {cleared && <span className="node-stamp">CLEARED</span>}
         </button>;
       })}

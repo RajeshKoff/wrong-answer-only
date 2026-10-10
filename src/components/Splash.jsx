@@ -2,7 +2,7 @@ export default function Splash({ onStart, onLeaderboard, highScore = 0 }) {
   return <div className="screen splash-screen">
     <button className="top-score-link" onClick={onLeaderboard}><span><i>HIGH</i> <b>SCORE :</b></span><strong>{highScore.toLocaleString()}</strong></button>
     <div className="logo-wrap">
-      <h1 className="glitch-logo" data-text="WRONG ANSWER"><span>WRONG</span><br />ANSWER</h1>
+      <h1 className="glitch-logo" data-text="WRONG ANSWER"><span>WRONG</span><br />ANSWERS</h1>
       <div className="logo-only">ONLY <i>✦</i></div>
       <div className="logo-stamp">WAO!<br /><small>QUIZ</small></div>
     </div>

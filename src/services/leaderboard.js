@@ -17,8 +17,11 @@ export async function updatePlayerLeaderboard(profile, stats) {
     id: "you", name: profile.name, level,
     score: bests.reduce((sum, item) => sum + item.score, 0),
     time: bests.reduce((sum, item) => sum + item.timeMs / 1000, 0),
-    attempts: Object.values(stats.attempts || {}).reduce((sum, count) => sum + count, 0),
+    stars: bests.reduce((sum, item) => sum + (item.stars || 0), 0),
+    attempts: bests.reduce((sum, item) => sum + (item.attemptsTaken ?? 1), 0),
     levelTimes: Object.fromEntries(bests.map((item) => [item.level, item.timeMs / 1000])),
+    levelStars: Object.fromEntries(bests.map((item) => [item.level, item.stars || 0])),
+    levelAttempts: Object.fromEntries(bests.map((item) => [item.level, item.attemptsTaken ?? 1])),
   };
   const rows = rankPlayers([...players.filter((entry) => entry.id !== "you"), player]);
   await storage.saveLeaderboard(rows);
