@@ -29,17 +29,17 @@ export const isPass = (question, pickedId) => pickedId === question.wrong;
 
 /* ───────── LEVEL 1 · 15 questions · 2 options ───────── */
 const L1 = [
-  ["Which is a Vijay movie?", "Leo", "Jailer"],
-  ["Which film stars Vijay?", "Ghilli", "Kaithi"],
+  ["Who is Thalapathy?", "Vijay", "Stalin"],
+  ["Which film stars Vijay?", "Kaththi", "Kaithi"],
   ["Which is Vijay's party?", "TVK", "DMK"],
-  ["Which is Rajinikanth's title?", "Superstar", "Ulaganayagan"],
+  ["Which is Rajinikanth's title?", "Superstar", "Supremestar"],
   ["Who is called 'Thala'?", "Ajith", "Dhanush"],
   ["Which is a Tamil Nadu city?", "Madurai", "Mumbai"],
   ["Tamil cinema is called...", "Kollywood", "Tollywood"],
   ["Which is a Tamil Nadu party?", "DMK", "TDP"],
   ["Which is a Tamil Nadu dish?", "Pongal", "Pav Bhaji"],
   ["Which is a Vijay song?", "Vaathi Coming", "Rowdy Baby"],
-  ["Which is a CSK jersey colour?", "Yellow", "Pink"],
+  ["Which is a CSK jersey colour?", "Yellow", "Blue"],
   ["Which is in Chennai?", "Marina Beach", "Charminar"],
   ["Who is a Kollywood hero?", "Suriya", "Mahesh Babu"],
   ["Nesamani meme is from...", "Friends", "Master"],
